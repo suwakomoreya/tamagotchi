@@ -1,2 +1,3 @@
 # tamagotchi
-# c++ application using jhollman json libary to save tamagotchi datagi
+ c++ application using jhollman json libary to save tamagotchi data 
+ 
