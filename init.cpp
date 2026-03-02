@@ -1,4 +1,5 @@
 #include "json.hpp"
+#include "tomocreate.h"
 #include <fstream>
 #include <iostream>
 #include <filesystem>
@@ -7,7 +8,8 @@ using json = nlohmann::json;
 namespace fs = std::filesystem;
 
 int main() {
-    fs::path infofile = "info.json"; 
+    fs::path infofile = "info.json";
+    fs::create_directories("tomodachis"); 
     std::fstream Info, petCreation;
     json infoObject,petObject;
     /*random generator*/
@@ -37,29 +39,10 @@ int main() {
         Info.close();
     }
     else{
-        std::string petname;
-
-        std::cout << "Seems like you don't have a pet, so lets get you one.\n"
-                    << "What should be the name of your friend?: " << std::endl; 
-
-        std::cout << "What should be the name of your friend?: ";
-        std::getline(std::cin,petname);
-        json petStats = {
-            {"Name", petname},
-            {"Age",  dist(gen)},
-            {"Hunger", {
-                {"Appetite", 50 },
-                {"Thirst", 50}
-            }},
-            {"Happiness", 80},
-            {"Energy", 70},
-            {"LastTimeUpdate"},
-            {"LastSavedTime"}
-        };
-        std::cout << "Great news, " << petname << " is now at your house!\n Take care of them.";
-        std::cout << petStats.dump(4) << std::endl;
+        std::cout << "Seems like you don't have a pet, so lets get you one." << std::endl;
     /*create new pet if one doesnt exist*/
-
-    return 0;
+        createtomo();
     }
+    createtomo();
+    return 0;
 }
