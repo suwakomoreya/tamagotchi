@@ -1,5 +1,5 @@
 #include "json.hpp"
-#include "tomocreate.h"
+#include "headuhs.h"
 #include <fstream>
 #include <iostream>
 #include <filesystem>
@@ -40,9 +40,7 @@ int main() {
     }
     else{
         std::cout << "Seems like you don't have a pet, so lets get you one." << std::endl;
-    /*create new pet if one doesnt exist*/
         createtomo();
     }
-    createtomo();
     return 0;
 }

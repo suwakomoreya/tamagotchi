@@ -6,6 +6,9 @@
 using json = nlohmann::ordered_json;
 namespace fs = std::filesystem;
 
+void menu(){
+    
+}
 void createtomo(){
     std::string petname;
     std::fstream petFile;
@@ -45,5 +48,14 @@ void createtomo(){
     petFile << petStats.dump(4);
     petFile.close();
 
+    std::ifstream info("info.json");
+    json infoobject;
+    info >> infoobject;
+    info.close();
+    infoobject["existingTomos"] = infoobject.value("existingTomos", 0) + 1;
+    std::ofstream out("info.json");
+    out << infoobject.dump(4);
+    out.close();
+    
     std::cout << "Great news, " << petname << " is now at your house!\n Take care of them.";
 }
