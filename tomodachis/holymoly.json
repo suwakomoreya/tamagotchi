@@ -1,0 +1,12 @@
+{
+    "Name": "holymoly",
+    "Age": 4,
+    "Hunger": {
+        "Appetite": 80,
+        "Thirst": 67
+    },
+    "Happiness": 90,
+    "Energy": 52,
+    "LastTimeUpdate": 0,
+    "LastSavedTime": 0
+}
