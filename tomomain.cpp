@@ -20,7 +20,7 @@ void menu(){
     WINDOW* menu = nullptr;
     WINDOW* cover = nullptr;
     WINDOW* alerts = nullptr;
-    WINDOW* windows[] = {screenScale,menu,cover,alerts};
+    WINDOW** windows[] = {screenScale,menu,cover,alerts};
 
     auto updateMenu = [&menu](){
         mvwprintw(menu,1,10,"Tamagotchi");
@@ -29,19 +29,19 @@ void menu(){
     };
 
     while(true){
-        for(WINDOW*& i : windows)
-            delwin(i);
+        for(WINDOW** i : windows)
+            delwin(*i);
         /*delete previous windows*/
         resize_term(0,0);
         screenScale = newwin(24,80,0,0);
         menu = newwin(21,30,1,4);
         cover = newwin(21,39,1,37);
         alerts = newwin(1,termX,0,0);
-        
-        /*windows*/
         getmaxyx(stdscr,termY,termX);
-        wrefresh(screenScale);
-        werase(alerts);
+        for(WINDOW& i : windows)
+            wrefresh(i);
+        /*windows*/
+
         if(screenScale == nullptr ||getmaxx(screenScale) > termX ||getmaxy(screenScale) > termY){
             wprintw(alerts,"Size: %dx%d (Please resize your window!)", termX,termY);
             wrefresh(alerts);
@@ -49,9 +49,6 @@ void menu(){
             continue;
         }
         
-        box(menu,0,0);
-        mvwprintw(menu,1,10,"Tamagotchi");
-        wnoutrefresh(menu);
         napms(50);
     }
 }
