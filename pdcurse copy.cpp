@@ -28,11 +28,9 @@ int main() {
         
         box(menu,0,0);
         mvwprintw(menu,1,10,"Tamagotchi");
-        wrefresh(menu);
+        wnoutrefresh(menu);
+        doupdate();
         napms(50);
-        
-        
-        
     }
     
 
