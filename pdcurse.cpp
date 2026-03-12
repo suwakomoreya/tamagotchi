@@ -3,10 +3,10 @@
 
 int main() {
     initscr();
-    cbreak;
+    cbreak();
     noecho();
     curs_set(0);
-
+    
     int termY,termX;
     WINDOW* screenScale = nullptr;
     WINDOW* menu = nullptr;
@@ -14,6 +14,7 @@ int main() {
     WINDOW* alerts = nullptr;
     WINDOW** windows[] = {&screenScale,&menu,&cover,&alerts};
     bool fire = true;
+    keypad(menu,TRUE);  
     auto updateMenu = [&menu](){
         mvwprintw(menu,1,10,"Tamagotchi");
         box(menu,0,0);
@@ -31,25 +32,27 @@ int main() {
         */
         /*delete previous windows*/
         resize_term(0,0);
+        getmaxyx(stdscr,termY,termX);
         screenScale = newwin(24,80,0,0);
         menu = newwin(21,30,1,4);
         cover = newwin(21,39,1,37);
         alerts = newwin(1,termX,0,0);
-        getmaxyx(stdscr,termY,termX);
+        keypad(menu,TRUE);
         
         /*windows*/
-
-        if(screenScale == nullptr ||getmaxx(screenScale) > termX ||getmaxy(screenScale) > termY){
-            
+        
+        if(termX < 80 || termY < 24){
             wprintw(alerts,"Size: %dx%d (Please resize your window!)", termX,termY);
             wrefresh(alerts);
             napms(50);
             continue;
         }
+        
         int ch = getch();
         if(ch == 'q'){
-            updateMenu();
-            
+            box(menu,0,0);
+            mvwprintw(menu,1,10,"Tamagotchi");
+            updateMenu();   
         }
         
         napms(50);
