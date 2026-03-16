@@ -11,44 +11,78 @@ namespace fs = std::filesystem;
 
 void menu(){
     initscr();
-    cbreak;
+    cbreak();
     noecho();
     curs_set(0);
-
-    int termY,termX;
-    WINDOW* screenScale = nullptr;
+    keypad(stdscr,true);
+    
     WINDOW* menu = nullptr;
     WINDOW* cover = nullptr;
     WINDOW* alerts = nullptr;
-    WINDOW** windows[] = {screenScale,menu,cover,alerts};
-
+    int termY,termX;
+    int tempY,tempX;
+    bool fire,alertupdate;
     auto updateMenu = [&menu](){
+        wclear(menu);
+        menu = newwin(21,30,1,4);
         mvwprintw(menu,1,10,"Tamagotchi");
         box(menu,0,0);
         wrefresh(menu);
     };
-
+    auto updateCover = [&cover](){
+        wclear(cover);
+        cover = newwin(21,39,1,37);
+        box(cover,0,0);
+        wrefresh(cover);  
+    };
+    auto createWins = [&](){
+        updateMenu();
+        updateCover();
+        getmaxyx(stdscr,termY,termX);
+        alerts = newwin(1,termX,0,0);
+    };
+    auto refresh = [&](){
+        wrefresh(menu);
+        wrefresh(cover);
+        wrefresh(alerts); 
+    };
+    
+    createWins();
+    refresh();
     while(true){
-        for(WINDOW** i : windows)
-            delwin(*i);
+        
         /*delete previous windows*/
         resize_term(0,0);
-        screenScale = newwin(24,80,0,0);
-        menu = newwin(21,30,1,4);
-        cover = newwin(21,39,1,37);
-        alerts = newwin(1,termX,0,0);
         getmaxyx(stdscr,termY,termX);
-        for(WINDOW& i : windows)
-            wrefresh(i);
         /*windows*/
 
-        if(screenScale == nullptr ||getmaxx(screenScale) > termX ||getmaxy(screenScale) > termY){
-            wprintw(alerts,"Size: %dx%d (Please resize your window!)", termX,termY);
-            wrefresh(alerts);
+        if(tempX < 0){
+            tempX = termX;
+            tempY = termY;
+        }
+        /*windows*/
+        if(termX < 80 || termY < 24){
+            if(tempX !=termX || tempY != termY){
+                erase();
+                refresh();
+                alerts = newwin(1,termX,0,0);
+                werase(alerts);
+                wprintw(alerts,"Size: %dx%d (Please resize your window!)", termX,termY);
+                wrefresh(alerts);
+                tempX = termX;
+                tempY = termY;
+            }
             napms(50);
+            fire = true;
             continue;
         }
-        
+        if(fire==true){
+            wclear(alerts);
+            updateMenu();
+            updateCover();    
+        }
+        alertupdate = false;
+        fire = false;
         napms(50);
     }
 }

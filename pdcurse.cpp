@@ -6,14 +6,14 @@ int main() {
     cbreak();
     noecho();
     curs_set(0);
+    keypad(stdscr,true);
     
-    int termY,termX;
-    WINDOW* screenScale = nullptr;
     WINDOW* menu = nullptr;
-    WINDOW* alerts = nullptr;
     WINDOW* cover = nullptr;
-    WINDOW** windows[] = {&screenScale,&menu,&cover,&alerts};
-    bool fire = true, alertupdate = false;
+    WINDOW* alerts = nullptr;
+    int termY,termX;
+    int tempY,tempX;
+    bool fire,alertupdate;
     auto updateMenu = [&menu](){
         wclear(menu);
         menu = newwin(21,30,1,4);
@@ -27,12 +27,39 @@ int main() {
         box(cover,0,0);
         wrefresh(cover);  
     };
-    int tempX = -1,tempY = -1;
+    auto createWins = [&](){
+        updateMenu();
+        updateCover();
+        getmaxyx(stdscr,termY,termX);
+        alerts = newwin(1,termX,0,0);
+    };
+    auto refresh = [&](){
+        wrefresh(menu);
+        wrefresh(cover);
+        wrefresh(alerts); 
+    };
+    auto runSelection = [&](int selected){
+
+    };
+    int selected=0;
+
+    enum menuSelections {
+        PLAY,
+        NEWTOMO,
+        SETTINGS,
+        EXIT
+    };
+
+    createWins();
+    refresh();
+
     while(true){
+        
+        /*delete previous windows*/
         resize_term(0,0);
         getmaxyx(stdscr,termY,termX);
-        screenScale = newwin(24,80,0,0);
-        
+        /*windows*/
+
         if(tempX < 0){
             tempX = termX;
             tempY = termY;
@@ -58,6 +85,20 @@ int main() {
             updateMenu();
             updateCover();    
         }
+
+        int input = wgetch(menu);
+        switch(input){
+            case KEY_UP:
+                selected--;
+                break;
+            case KEY_DOWN:
+                selected++;
+                break;
+            case '\n':
+                runSelection(selected);
+                break;
+        }
+
         alertupdate = false;
         fire = false;
         napms(50);
