@@ -15,76 +15,133 @@ void menu(){
     noecho();
     curs_set(0);
     keypad(stdscr,true);
-    
+
     WINDOW* menu = nullptr;
     WINDOW* cover = nullptr;
     WINDOW* alerts = nullptr;
-    int termY,termX;
-    int tempY,tempX;
-    bool fire,alertupdate;
-    auto updateMenu = [&menu](){
-        wclear(menu);
-        menu = newwin(21,30,1,4);
-        mvwprintw(menu,1,10,"Tamagotchi");
+    int termY, termX;
+    int tempY=-1, tempX=-1;
+    bool fire = false, alertupdate;
+
+    int selected = 0;
+    std::string menuText[] = {"Play", "New Tomo", "Settings", "Exit"};
+    int count = sizeof(menuText)/sizeof(menuText[0]);
+
+    auto runSelection = [&](int selected){
+        // Example: Exit menu option works
+        if(selected == 3){ 
+            endwin();
+            exit(0);
+        }
+        if(selected == 1)
+            endwin();
+            createtomo();
+    };
+
+    auto updateMenu = [&](){
+        if(menu == nullptr) menu = newwin(21,30,1,4);
+        werase(menu);
         box(menu,0,0);
+        mvwprintw(menu,1,10,"Tamagotchi");
+        for(int i=0;i<count;i++){
+            if(i == selected) wattron(menu,A_REVERSE);
+            mvwprintw(menu,3+i,2,menuText[i].c_str());
+            if(i == selected) wattroff(menu,A_REVERSE);
+        }
         wrefresh(menu);
     };
-    auto updateCover = [&cover](){
-        wclear(cover);
-        cover = newwin(21,39,1,37);
+
+    auto updateCover = [&](){
+        if(cover == nullptr) cover = newwin(21,39,1,37);
+        werase(cover);
         box(cover,0,0);
+        mvwprintw(cover,1,2,"Your Pet");
         wrefresh(cover);  
     };
+
     auto createWins = [&](){
+        if(menu == nullptr) menu = newwin(21,30,1,4);
+        if(cover == nullptr) cover = newwin(21,39,1,37);
+        getmaxyx(stdscr, termY, termX);
+        if(alerts == nullptr) alerts = newwin(1,termX,0,0);
         updateMenu();
         updateCover();
-        getmaxyx(stdscr,termY,termX);
-        alerts = newwin(1,termX,0,0);
     };
-    auto refresh = [&](){
+
+    auto refreshAll = [&](){
         wrefresh(menu);
         wrefresh(cover);
         wrefresh(alerts); 
     };
-    
+
     createWins();
-    refresh();
+
     while(true){
-        
-        /*delete previous windows*/
         resize_term(0,0);
-        getmaxyx(stdscr,termY,termX);
-        /*windows*/
+        getmaxyx(stdscr, termY, termX);
 
         if(tempX < 0){
             tempX = termX;
             tempY = termY;
         }
-        /*windows*/
+
+        // Terminal too small
         if(termX < 80 || termY < 24){
-            if(tempX !=termX || tempY != termY){
-                erase();
-                refresh();
-                alerts = newwin(1,termX,0,0);
+            if(alerts != nullptr){
                 werase(alerts);
-                wprintw(alerts,"Size: %dx%d (Please resize your window!)", termX,termY);
+                wresize(alerts,1,termX);
+                wprintw(alerts,"Terminal too small: %dx%d (Resize please)", termX, termY);
                 wrefresh(alerts);
+            }
+            // skip menu drawing but still process input
+        } else {
+            // Terminal big enough, recreate windows if size changed
+            if(tempX != termX || tempY != termY || fire){
+                if(menu) delwin(menu);
+                if(cover) delwin(cover);
+                if(alerts) delwin(alerts);
+
+                menu = newwin(21,30,1,4);
+                cover = newwin(21,39,1,37);
+                alerts = newwin(1, termX,0,0);
+
                 tempX = termX;
                 tempY = termY;
+                fire = true;
             }
-            napms(50);
-            fire = true;
-            continue;
-        }
-        if(fire==true){
-            wclear(alerts);
+
+            werase(alerts);
+            wrefresh(alerts);
+
             updateMenu();
-            updateCover();    
+            updateCover();
         }
-        alertupdate = false;
+
+        // handle input
+        int ch = getch();
+        switch(ch){
+            case KEY_UP:
+                selected--;
+                if(selected < 0) selected = count-1;
+                break;
+            case KEY_DOWN:
+                selected++;
+                if(selected >= count) selected = 0;
+                break;
+            case '\n':
+                runSelection(selected);
+                break;
+        }
+
         fire = false;
+        alertupdate = false;
         napms(50);
     }
+
+    delwin(menu);
+    delwin(cover);
+    delwin(alerts);
+    endwin();
 }
 void createtomo(){
     std::string petname;

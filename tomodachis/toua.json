@@ -1,0 +1,12 @@
+{
+    "Name": "toua",
+    "Age": 5,
+    "Hunger": {
+        "Appetite": 59,
+        "Thirst": 96
+    },
+    "Happiness": 44,
+    "Energy": 59,
+    "LastTimeUpdate": 0,
+    "LastSavedTime": 0
+}
