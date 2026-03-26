@@ -8,7 +8,7 @@
 
 using json = nlohmann::ordered_json;
 namespace fs = std::filesystem;
-
+void createtomo();
 void menu(){
     initscr();
     cbreak();
@@ -33,9 +33,10 @@ void menu(){
             endwin();
             exit(0);
         }
-        if(selected == 1)
+        if(selected == 1){
             endwin();
             createtomo();
+        }
     };
 
     auto updateMenu = [&](){
