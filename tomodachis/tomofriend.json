@@ -1,0 +1,12 @@
+{
+    "Name": "tomofriend",
+    "Age": 2,
+    "Hunger": {
+        "Appetite": 78,
+        "Thirst": 99
+    },
+    "Happiness": 49,
+    "Energy": 86,
+    "LastTimeUpdate": 0,
+    "LastSavedTime": 0
+}

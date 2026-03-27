@@ -42,5 +42,6 @@ int main() {
         std::cout << "Seems like you don't have a pet, so lets get you one." << std::endl;
         createtomo();
     }
+    menu();
     return 0;
 }
