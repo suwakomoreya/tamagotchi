@@ -8,9 +8,13 @@
 
 using json = nlohmann::ordered_json;
 namespace fs = std::filesystem;
+
+int TERMY,TERMX;
+int tempY=-1, tempX=-1;
+
+
 void createtomo();
 void menu(){
-    initscr();
     cbreak();
     noecho();
     curs_set(0);
@@ -145,6 +149,9 @@ void menu(){
     endwin();
 }
 void createtomo(){
+    initscr();
+    nocbreak();
+    noecho();
     std::string petname;
     std::fstream petFile;
     
@@ -153,7 +160,8 @@ void createtomo(){
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> age(1,5);
     std::uniform_int_distribution<> otherStats(50,100);
-    
+    // windows
+    WINDOW* textarea = newwin(termy,termx,0,0);
     std::cout << "What should be the name of your friend?: ";
     for(;;){
         std::getline(std::cin,petname);
@@ -192,5 +200,6 @@ void createtomo(){
     out << infoobject.dump(4);
     out.close();
     
-    std::cout << "Great news, " << petname << " is now at your house!\n Take care of them.";
+    std::cout << "Great news, " << petname << " is now at your house!\nTake care of them.";
+    int end = getch();
 }

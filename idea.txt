@@ -1,4 +1,1 @@
-tamagotchi cli app
-uses json file as character slots, uses system clock and last log to track 
-health, hunger, boredom, thirst etc
-light mini games
+g++ init.cpp tomo.cpp -IC:/Users/CFWAV/tamagotchi/pdcurses -LC:/Users/CFWAV/tamagotchi/pdcurses/wincon -lpdcurses -o tamagotchi.exe

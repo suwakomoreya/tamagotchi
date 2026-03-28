@@ -4,6 +4,7 @@
 #include <iostream>
 #include <filesystem>
 #include <random>
+#include <curses.h>
 using json = nlohmann::json;
 namespace fs = std::filesystem;
  // function declaration
