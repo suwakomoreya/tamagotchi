@@ -9,9 +9,48 @@
 using json = nlohmann::ordered_json;
 namespace fs = std::filesystem;
 
-int TERMY,TERMX;
+int termY,termX;
 int tempY=-1, tempX=-1;
+bool fire = false;
 
+void terminalrefresh(WINDOW* windows[], int wincount){
+    nodelay(stdscr, TRUE);
+    resize_term(0,0); 
+    getmaxyx(stdscr,termY,termX);
+
+    WINDOW* alerts = newwin(termY,termX,0,0);
+
+    if(tempX < 0){
+        tempX = termX;
+        tempY = termY;
+    }
+    if(termX < 80 || termY < 24){
+        if(alerts != nullptr){
+            werase(alerts);
+            wresize(alerts,1,termX);
+            wprintw(alerts,"Terminal too small: %dx%d (Resize please)", termX, termY);
+            wrefresh(alerts);
+        }
+    }
+    // skip menu drawing but still process input
+    // by here, ill delete windows if they exist and then recreate them in the other function since theyre all unique sizes
+    else{
+        if(tempX != termX || tempY != termY || fire){
+            for(int i = 0; i<wincount; i++){
+                if(windows[i])
+                    delwin(windows[i]);
+            }
+            if(alerts) delwin(alerts);
+            alerts = newwin(1, termX,0,0);
+            tempX = termX;
+            tempY = termY;
+            fire = true;
+        }
+        werase(alerts);
+        wrefresh(alerts);
+        //from here, youll update your windows right after the function ends by checking if fire was true
+    }
+};
 
 void createtomo();
 void menu(){
@@ -99,7 +138,8 @@ void menu(){
                 wrefresh(alerts);
             }
             // skip menu drawing but still process input
-        } else {
+        } 
+        else {
             // Terminal big enough, recreate windows if size changed
             if(tempX != termX || tempY != termY || fire){
                 if(menu) delwin(menu);
@@ -161,7 +201,8 @@ void createtomo(){
     std::uniform_int_distribution<> age(1,5);
     std::uniform_int_distribution<> otherStats(50,100);
     // windows
-    WINDOW* textarea = newwin(termy,termx,0,0);
+    WINDOW* textarea = newwin(termY,termX,0,0);
+    // actually start code
     std::cout << "What should be the name of your friend?: ";
     for(;;){
         std::getline(std::cin,petname);
