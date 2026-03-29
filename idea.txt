@@ -1,1 +1,1 @@
-g++ init.cpp tomo.cpp -IC:/Users/CFWAV/tamagotchi/pdcurses -LC:/Users/CFWAV/tamagotchi/pdcurses/wincon -lpdcurses -o tamagotchi.exe
+g++ init.cpp tomomain.cpp -IC:/Users/CFWAV/tamagotchi/pdcurses -LC:/Users/CFWAV/tamagotchi/pdcurses/wincon -lpdcurses -o tamagotchi.exe

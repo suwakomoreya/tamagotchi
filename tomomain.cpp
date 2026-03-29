@@ -12,24 +12,31 @@ namespace fs = std::filesystem;
 int termY,termX;
 int tempY=-1, tempX=-1;
 bool fire = false;
-
-void terminalrefresh(WINDOW* windows[], int wincount){
+struct ui{
+    // menu
+    WINDOW* menu = nullptr;
+    WINDOW* cover = nullptr;
+    WINDOW* alerts = nullptr;
+    WINDOW** menucollection[3] ={&menu,&cover,&alerts};
+};
+void terminalrefresh(ui& ui,int wincount){
     nodelay(stdscr, TRUE);
     resize_term(0,0); 
     getmaxyx(stdscr,termY,termX);
 
-    WINDOW* alerts = newwin(termY,termX,0,0);
+    
+    ui.alerts = newwin(termY,termX,0,0);
 
     if(tempX < 0){
         tempX = termX;
         tempY = termY;
     }
     if(termX < 80 || termY < 24){
-        if(alerts != nullptr){
-            werase(alerts);
-            wresize(alerts,1,termX);
-            wprintw(alerts,"Terminal too small: %dx%d (Resize please)", termX, termY);
-            wrefresh(alerts);
+        if(ui.alerts != nullptr){
+            werase(ui.alerts);
+            wresize(ui.alerts,1,termX);
+            wprintw(ui.alerts,"Terminal too small: %dx%d (Resize please)", termX, termY);
+            wrefresh(ui.alerts);
         }
     }
     // skip menu drawing but still process input
@@ -37,17 +44,17 @@ void terminalrefresh(WINDOW* windows[], int wincount){
     else{
         if(tempX != termX || tempY != termY || fire){
             for(int i = 0; i<wincount; i++){
-                if(windows[i])
-                    delwin(windows[i]);
+                if(ui.menucollection[i])
+                    delwin(*ui.menucollection[i]);
             }
-            if(alerts) delwin(alerts);
-            alerts = newwin(1, termX,0,0);
+            if(ui.alerts) delwin(ui.alerts);
+            ui.alerts = newwin(1, termX,0,0);
             tempX = termX;
             tempY = termY;
             fire = true;
         }
-        werase(alerts);
-        wrefresh(alerts);
+        werase(ui.alerts);
+        wrefresh(ui.alerts);
         //from here, youll update your windows right after the function ends by checking if fire was true
     }
 };
@@ -62,9 +69,9 @@ void menu(){
     WINDOW* menu = nullptr;
     WINDOW* cover = nullptr;
     WINDOW* collection[] = {menu,cover};
-    int termY, termX;
-    int tempY=-1, tempX=-1;
-    fire = false, alertupdate;
+    int wincount = sizeof(collection)/sizeof(collection[0]);
+    
+    bool alertupdate;
 
     int selected = 0;
     std::string menuText[] = {"Play", "New Tomo", "Settings", "Exit"};
@@ -123,7 +130,6 @@ void menu(){
     while(true){
         resize_term(0,0);
         getmaxyx(stdscr, termY, termX);
-
         /* if(tempX < 0){
             tempX = termX;
             tempY = termY;
@@ -163,10 +169,10 @@ void menu(){
             updateMenu();
             updateCover();
         }*/
-        terminalrefresh(collection[], collection.size());
+        // terminalrefresh(collection, alerts, wincount);
         if(fire==true){
-            werase(alerts);
-            wrefresh(alerts);
+            updateMenu();
+            updateCover();
         }
 
         // handle input
@@ -192,7 +198,7 @@ void menu(){
 
     delwin(menu);
     delwin(cover);
-    delwin(alerts);
+    
     endwin();
 }
 void createtomo(){
