@@ -61,10 +61,10 @@ void menu(){
 
     WINDOW* menu = nullptr;
     WINDOW* cover = nullptr;
-    WINDOW* alerts = nullptr;
+    WINDOW* collection[] = {menu,cover};
     int termY, termX;
     int tempY=-1, tempX=-1;
-    bool fire = false, alertupdate;
+    fire = false, alertupdate;
 
     int selected = 0;
     std::string menuText[] = {"Play", "New Tomo", "Settings", "Exit"};
@@ -72,11 +72,11 @@ void menu(){
 
     auto runSelection = [&](int selected){
         // Example: Exit menu option works
-        if(selected == 3){ 
+        if(selected == 3){  //quit
             endwin();
             exit(0);
         }
-        if(selected == 1){
+        if(selected == 1){ //create tomodachi
             endwin();
             createtomo();
         }
@@ -107,7 +107,7 @@ void menu(){
         if(menu == nullptr) menu = newwin(21,30,1,4);
         if(cover == nullptr) cover = newwin(21,39,1,37);
         getmaxyx(stdscr, termY, termX);
-        if(alerts == nullptr) alerts = newwin(1,termX,0,0);
+        // if(alerts == nullptr) alerts = newwin(1,termX,0,0);
         updateMenu();
         updateCover();
     };
@@ -115,7 +115,7 @@ void menu(){
     auto refreshAll = [&](){
         wrefresh(menu);
         wrefresh(cover);
-        wrefresh(alerts); 
+        // wrefresh(alerts); 
     };
 
     createWins();
@@ -124,13 +124,15 @@ void menu(){
         resize_term(0,0);
         getmaxyx(stdscr, termY, termX);
 
-        if(tempX < 0){
+        /* if(tempX < 0){
             tempX = termX;
             tempY = termY;
         }
+        */
 
         // Terminal too small
-        if(termX < 80 || termY < 24){
+
+        /* if(termX < 80 || termY < 24){
             if(alerts != nullptr){
                 werase(alerts);
                 wresize(alerts,1,termX);
@@ -138,8 +140,8 @@ void menu(){
                 wrefresh(alerts);
             }
             // skip menu drawing but still process input
-        } 
-        else {
+        } */
+        /*else {
             // Terminal big enough, recreate windows if size changed
             if(tempX != termX || tempY != termY || fire){
                 if(menu) delwin(menu);
@@ -160,6 +162,11 @@ void menu(){
 
             updateMenu();
             updateCover();
+        }*/
+        terminalrefresh(collection[], collection.size());
+        if(fire==true){
+            werase(alerts);
+            wrefresh(alerts);
         }
 
         // handle input
@@ -243,4 +250,5 @@ void createtomo(){
     
     std::cout << "Great news, " << petname << " is now at your house!\nTake care of them.";
     int end = getch();
+
 }
