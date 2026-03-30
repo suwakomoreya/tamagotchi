@@ -8,10 +8,15 @@
 using json = nlohmann::json;
 namespace fs = std::filesystem;
  // function declaration
-void menu();
+void mainmenu();
 void createtomo();
 
 int main() {
+    initscr();       // must happen first
+    cbreak();
+    noecho();
+    curs_set(0);
+
     fs::path infofile = "info.json";
     fs::create_directories("tomodachis"); 
     std::fstream Info;
@@ -20,7 +25,12 @@ int main() {
     std::random_device rd;
     std::mt19937 gen(rd());
 
- 
+    // Instead of:
+    std::cout << "working?\n";
+
+    // Use:
+    printw("working?\n");
+    refresh();
     // std::cout << "Tamagotchi" << std::endl;
     // std::cout << "Current Path: " << fs::current_path() << std::endl;
 
@@ -46,7 +56,8 @@ int main() {
         std::cout << "Seems like you don't have a pet, so let's get you one." << std::endl;
         createtomo();
     }
-    menu();
+    ui myui;        
+    mainmenu(myui); 
 
     return 0;
 }

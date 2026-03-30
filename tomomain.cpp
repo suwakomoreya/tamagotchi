@@ -25,7 +25,7 @@ void terminalrefresh(ui& ui,int wincount){
     getmaxyx(stdscr,termY,termX);
 
     
-    ui.alerts = newwin(termY,termX,0,0);
+    // ui.alerts = newwin(termY,termX,0,0);
 
     if(tempX < 0){
         tempX = termX;
@@ -33,6 +33,7 @@ void terminalrefresh(ui& ui,int wincount){
     }
     if(termX < 80 || termY < 24){
         if(ui.alerts != nullptr){
+            ui.alerts = newwin(1,termX,0,0);
             werase(ui.alerts);
             wresize(ui.alerts,1,termX);
             wprintw(ui.alerts,"Terminal too small: %dx%d (Resize please)", termX, termY);
@@ -44,10 +45,12 @@ void terminalrefresh(ui& ui,int wincount){
     else{
         if(tempX != termX || tempY != termY || fire){
             for(int i = 0; i<wincount; i++){
-                if(ui.menucollection[i])
+                if(*ui.menucollection[i]){
                     delwin(*ui.menucollection[i]);
+                    *ui.menucollection[i] = nullptr;
+                }
             }
-            if(ui.alerts) delwin(ui.alerts);
+            
             ui.alerts = newwin(1, termX,0,0);
             tempX = termX;
             tempY = termY;
@@ -60,22 +63,20 @@ void terminalrefresh(ui& ui,int wincount){
 };
 
 void createtomo();
-void menu(){
+void mainmenu(ui& ui){
     cbreak();
     noecho();
     curs_set(0);
     keypad(stdscr,true);
 
-    WINDOW* menu = nullptr;
-    WINDOW* cover = nullptr;
-    WINDOW* collection[] = {menu,cover};
-    int wincount = sizeof(collection)/sizeof(collection[0]);
+    int wincount = sizeof(ui.menucollection)/sizeof(ui.menucollection[0]);
     
     bool alertupdate;
 
     int selected = 0;
     std::string menuText[] = {"Play", "New Tomo", "Settings", "Exit"};
     int count = sizeof(menuText)/sizeof(menuText[0]);
+    
 
     auto runSelection = [&](int selected){
         // Example: Exit menu option works
@@ -90,29 +91,29 @@ void menu(){
     };
 
     auto updateMenu = [&](){
-        if(menu == nullptr) menu = newwin(21,30,1,4);
-        werase(menu);
-        box(menu,0,0);
-        mvwprintw(menu,1,10,"Tamagotchi");
+        if(ui.menu == nullptr) ui.menu = newwin(21,30,1,4);
+        werase(ui.menu);
+        box(ui.menu,0,0);
+        mvwprintw(ui.menu,1,10,"Tamagotchi");
         for(int i=0;i<count;i++){
-            if(i == selected) wattron(menu,A_REVERSE);
-            mvwprintw(menu,3+i,2,menuText[i].c_str());
-            if(i == selected) wattroff(menu,A_REVERSE);
+            if(i == selected) wattron(ui.menu,A_REVERSE);
+            mvwprintw(ui.menu,3+i,2,menuText[i].c_str());
+            if(i == selected) wattroff(ui.menu,A_REVERSE);
         }
-        wrefresh(menu);
+        wrefresh(ui.menu);
     };
 
     auto updateCover = [&](){
-        if(cover == nullptr) cover = newwin(21,39,1,37);
-        werase(cover);
-        box(cover,0,0);
-        mvwprintw(cover,1,2,"Your Pet");
-        wrefresh(cover);  
+        if(ui.cover == nullptr) ui.cover = newwin(21,39,1,37);
+        werase(ui.cover);
+        box(ui.cover,0,0);
+        mvwprintw(ui.cover,1,2,"Your Pet");
+        wrefresh(ui.cover);  
     };
 
     auto createWins = [&](){
-        if(menu == nullptr) menu = newwin(21,30,1,4);
-        if(cover == nullptr) cover = newwin(21,39,1,37);
+        if(ui.menu == nullptr) ui.menu = newwin(21,30,1,4);
+        if(ui.cover == nullptr) ui.cover = newwin(21,39,1,37);
         getmaxyx(stdscr, termY, termX);
         // if(alerts == nullptr) alerts = newwin(1,termX,0,0);
         updateMenu();
@@ -120,25 +121,27 @@ void menu(){
     };
 
     auto refreshAll = [&](){
-        wrefresh(menu);
-        wrefresh(cover);
+        wrefresh(ui.menu);
+        wrefresh(ui.cover);
         // wrefresh(alerts); 
     };
 
+    terminalrefresh(ui,wincount);
     createWins();
 
     while(true){
-        resize_term(0,0);
-        getmaxyx(stdscr, termY, termX);
-        /* if(tempX < 0){
+         /*
+         resize_term(0,0);
+         getmaxyx(stdscr, termY, termX);
+         if(tempX < 0){
             tempX = termX;
             tempY = termY;
         }
-        */
+        
 
         // Terminal too small
 
-        /* if(termX < 80 || termY < 24){
+         if(termX < 80 || termY < 24){
             if(alerts != nullptr){
                 werase(alerts);
                 wresize(alerts,1,termX);
@@ -146,8 +149,8 @@ void menu(){
                 wrefresh(alerts);
             }
             // skip menu drawing but still process input
-        } */
-        /*else {
+        } 
+        else {
             // Terminal big enough, recreate windows if size changed
             if(tempX != termX || tempY != termY || fire){
                 if(menu) delwin(menu);
@@ -168,12 +171,17 @@ void menu(){
 
             updateMenu();
             updateCover();
-        }*/
-        // terminalrefresh(collection, alerts, wincount);
+        } */
+        terminalrefresh(ui,wincount);
+        if(ui.alerts) 
+            wrefresh(ui.alerts);
         if(fire==true){
+            if(ui.alerts == nullptr)
+                ui.alerts =newwin(1,termX,0,0);
             updateMenu();
             updateCover();
         }
+        
 
         // handle input
         int ch = getch();
@@ -196,8 +204,9 @@ void menu(){
         napms(50);
     }
 
-    delwin(menu);
-    delwin(cover);
+    delwin(ui.menu);
+    ui.menu = nullptr;
+    delwin(ui.cover);
     
     endwin();
 }
