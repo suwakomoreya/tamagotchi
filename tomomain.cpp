@@ -211,9 +211,8 @@ void mainmenu(ui& ui){
     endwin();
 }
 void createtomo(){
-    initscr();
-    nocbreak();
-    noecho();
+    // nocbreak();
+    // noecho();
     std::string petname;
     std::fstream petFile;
     

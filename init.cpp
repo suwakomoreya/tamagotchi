@@ -12,11 +12,6 @@ void mainmenu();
 void createtomo();
 
 int main() {
-    initscr();       // must happen first
-    cbreak();
-    noecho();
-    curs_set(0);
-
     fs::path infofile = "info.json";
     fs::create_directories("tomodachis"); 
     std::fstream Info;
@@ -56,6 +51,11 @@ int main() {
         std::cout << "Seems like you don't have a pet, so let's get you one." << std::endl;
         createtomo();
     }
+    initscr();       // must happen first
+    cbreak();
+    noecho();
+    curs_set(0);
+
     ui myui;        
     mainmenu(myui); 
 
