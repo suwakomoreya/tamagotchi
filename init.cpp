@@ -55,6 +55,7 @@ int main() {
     cbreak();
     noecho();
     curs_set(0);
+    keypad(stdscr,true);
 
     ui myui;        
     mainmenu(myui); 

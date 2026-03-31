@@ -24,7 +24,6 @@ void terminalrefresh(ui& ui,int wincount){
     resize_term(0,0); 
     getmaxyx(stdscr,termY,termX);
 
-    
     // ui.alerts = newwin(termY,termX,0,0);
 
     if(tempX < 0){
@@ -52,8 +51,7 @@ void terminalrefresh(ui& ui,int wincount){
             }
             
             ui.alerts = newwin(1, termX,0,0);
-            tempX = termX;
-            tempY = termY;
+
             fire = true;
         }
         werase(ui.alerts);
@@ -208,7 +206,6 @@ void mainmenu(ui& ui){
     ui.menu = nullptr;
     delwin(ui.cover);
     
-    endwin();
 }
 void createtomo(){
     // nocbreak();
