@@ -1,0 +1,12 @@
+{
+    "Name": "me friendo",
+    "Age": 2,
+    "Hunger": {
+        "Appetite": 98,
+        "Thirst": 88
+    },
+    "Happiness": 66,
+    "Energy": 57,
+    "LastTimeUpdate": 0,
+    "LastSavedTime": 0
+}

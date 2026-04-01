@@ -1,6 +1,5 @@
 #include "json.hpp"
 #include <curses.h>
-
 #include <iostream>
 #include <fstream>
 #include <filesystem>
@@ -12,15 +11,25 @@ namespace fs = std::filesystem;
 int termY,termX;
 int tempY=-1, tempX=-1;
 bool fire = false;
+
 struct ui{
-    // menu
+    WINDOW* alerts = nullptr;
+    // alert
     WINDOW* menu = nullptr;
     WINDOW* cover = nullptr;
-    WINDOW* alerts = nullptr;
     WINDOW** menucollection[3] ={&menu,&cover,&alerts};
+    // mainmenu
+
+    WINDOW* playmenu = nullptr;
+    WINDOW* pet = nullptr;
+};
+enum class winstate{
+    mainmenu,
+    playmenu,
+    createtomo
 };
 void terminalrefresh(ui& ui,int wincount){
-    nodelay(stdscr, TRUE);
+    nodelay(ui.alerts, TRUE);
     resize_term(0,0); 
     getmaxyx(stdscr,termY,termX);
 
@@ -49,7 +58,6 @@ void terminalrefresh(ui& ui,int wincount){
                     *ui.menucollection[i] = nullptr;
                 }
             }
-            
             ui.alerts = newwin(1, termX,0,0);
 
             fire = true;
@@ -61,6 +69,7 @@ void terminalrefresh(ui& ui,int wincount){
 };
 
 void createtomo();
+void playmenu(ui& ui);
 void mainmenu(ui& ui){
     cbreak();
     noecho();
@@ -78,6 +87,10 @@ void mainmenu(ui& ui){
 
     auto runSelection = [&](int selected){
         // Example: Exit menu option works
+        if(selected == 0){ //play
+            endwin();
+            playmenu(ui);
+        } 
         if(selected == 3){  //quit
             endwin();
             exit(0);
@@ -126,7 +139,6 @@ void mainmenu(ui& ui){
 
     terminalrefresh(ui,wincount);
     createWins();
-
     while(true){
          /*
          resize_term(0,0);
@@ -180,7 +192,6 @@ void mainmenu(ui& ui){
             updateCover();
         }
         
-
         // handle input
         int ch = getch();
         switch(ch){
@@ -201,12 +212,19 @@ void mainmenu(ui& ui){
         alertupdate = false;
         napms(50);
     }
-
-    delwin(ui.menu);
-    ui.menu = nullptr;
-    delwin(ui.cover);
+ 
+    // delwin(ui.menu);
+    // ui.menu = nullptr;
+    // delwin(ui.cover);
     
 }
+void playmenu(ui& ui){
+    cbreak();
+    noecho();
+    curs_set(0);
+    keypad(stdscr,true);
+    
+};
 void createtomo(){
     // nocbreak();
     // noecho();

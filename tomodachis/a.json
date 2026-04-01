@@ -1,0 +1,12 @@
+{
+    "Name": "a",
+    "Age": 2,
+    "Hunger": {
+        "Appetite": 85,
+        "Thirst": 82
+    },
+    "Happiness": 58,
+    "Energy": 85,
+    "LastTimeUpdate": 0,
+    "LastSavedTime": 0
+}
